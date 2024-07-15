@@ -73,8 +73,11 @@ export const saveCryptoData = async (req: Request, res: Response) => {
 export const getCryptoList=async(req:Request, res: Response)=>{
     
     try {
-        const cryptoList = await axiosFactory("get", `${process.env.COINGECKO_API}/coins/markets?vs_currency=usd`);
-
+        const cryptoList:any = await axiosFactory("get", `${process.env.COINGECKO_API}/coins/markets?vs_currency=usd`);
+        if(!cryptoList?.data.success)
+            {
+                return res.status(500).json({ message:'No Response from CoinGecko api please try after 30 seconds' });
+            }
         res.status(200).json({ message: 'Cryptocurrency List fetch', data:cryptoList });
         
     } catch (error: any) {
@@ -93,6 +96,8 @@ export const getPriceHistory=async(req:Request, res: Response)=>{
             return res.status(400).json({ message: 'Crypto query parameter is required' });
         }
         let priceHistory:any = await axiosFactory("get", `${process.env.COINGECKO_API}/coins/${crypto}/market_chart?vs_currency=usd&days=120`);
+      
+        console.log(priceHistory?.prices?.length);
         let ans:[]=priceHistory?.prices?.slice(110,120)
         console.log(ans);
         
