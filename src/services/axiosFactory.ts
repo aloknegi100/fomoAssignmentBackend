@@ -25,7 +25,7 @@ export const axiosFactory = async <R, D = {}>(method: 'get' | 'post' | 'patch' |
             // toast.error("No Response From Server")
             return {
                 success: false,
-                message: "No Response From Server"
+                message: "Coin Gecko Api error please try again after 30 seconds or Refresh page"
             } as R;
         }
     }

@@ -61,10 +61,15 @@ const saveCryptoData = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.saveCryptoData = saveCryptoData;
 const getCryptoList = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const cryptoList = yield (0, axiosFactory_1.axiosFactory)("get", `${process.env.COINGECKO_API}/coins/markets?vs_currency=usd`);
-        if (!(cryptoList === null || cryptoList === void 0 ? void 0 : cryptoList.data.success)) {
-            return res.status(500).json({ message: 'No Response from CoinGecko api please try after 30 seconds' });
+        console.log(cryptoList);
+        if (((_a = cryptoList === null || cryptoList === void 0 ? void 0 : cryptoList.data) === null || _a === void 0 ? void 0 : _a.success) === false) {
+            return res.status(500).json({
+                success: false,
+                message: 'No Response from CoinGecko api please try after 30 seconds'
+            });
         }
         res.status(200).json({ message: 'Cryptocurrency List fetch', data: cryptoList });
     }
@@ -75,16 +80,17 @@ const getCryptoList = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.getCryptoList = getCryptoList;
 const getPriceHistory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a;
     try {
         const crypto = req.query.crypto;
         if (!crypto) {
             return res.status(400).json({ message: 'Crypto query parameter is required' });
         }
         let priceHistory = yield (0, axiosFactory_1.axiosFactory)("get", `${process.env.COINGECKO_API}/coins/${crypto}/market_chart?vs_currency=usd&days=120`);
-        console.log((_a = priceHistory === null || priceHistory === void 0 ? void 0 : priceHistory.prices) === null || _a === void 0 ? void 0 : _a.length);
-        let ans = (_b = priceHistory === null || priceHistory === void 0 ? void 0 : priceHistory.prices) === null || _b === void 0 ? void 0 : _b.slice(110, 120);
+        let ans = (_a = priceHistory === null || priceHistory === void 0 ? void 0 : priceHistory.prices) === null || _a === void 0 ? void 0 : _a.slice(110, 120);
         console.log(ans);
+        if (!Array.isArray(ans))
+            return res.status(500).json({ message: 'No Response from CoinGecko api please try after 30 seconds' });
         res.status(200).json({ message: 'Cryptocurrency List fetch', data: ans });
     }
     catch (error) {
