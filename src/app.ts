@@ -2,7 +2,9 @@ import express, { Request, Response }  from "express";
 import mongoose from 'mongoose';
 import CryptoRouter from "./routes/crypto";
 import cors from 'cors'
+import dotenv from 'dotenv';
 
+dotenv.config();
 const app=express()
 const port=3000
 
@@ -12,7 +14,7 @@ app.use(cors({
   }
   ));
 
-const MONGODB_URI = 'mongodb://localhost:27017/fomoFactory';
+const MONGODB_URI = process.env.MONGODB_URI||'mongodb://localhost:27017/fomoFactory';
 
 mongoose.connect(MONGODB_URI)
 .then(() => console.log('MongoDB connected'))

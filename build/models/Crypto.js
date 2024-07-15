@@ -26,7 +26,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Crypto = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const cryptoSchema = new mongoose_1.Schema({
-    id: { type: String, required: true, unique: true },
+    id: { type: String, unique: true },
     symbol: { type: String },
     name: { type: String },
     image: { type: Object },

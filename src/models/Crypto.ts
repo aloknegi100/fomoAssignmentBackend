@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 import { ICrypto } from '../types/Crypto';
 
 const cryptoSchema: Schema = new Schema({
-  id: { type: String, required: true, unique: true },
+  id: { type: String, unique: true },
   symbol: { type: String },
   name: { type: String },
   image: { type: Object },

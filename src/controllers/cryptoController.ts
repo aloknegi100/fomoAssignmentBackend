@@ -3,7 +3,6 @@ import { Crypto } from '../models/Crypto';
 import { axiosFactory } from '../services/axiosFactory';
 import { ICrypto } from '../types/Crypto';
 
-// Helper function to filter and map cryptoData
 const filterCryptoData = (cryptoData: any): ICrypto => {
     const {
         id,
@@ -24,8 +23,7 @@ const filterCryptoData = (cryptoData: any): ICrypto => {
     };
 };
 
-// Function to save cryptocurrency data
-export const saveCryptoData = async (req: Request, res: Response) => {
+export const saveCryptoData = async (req: Request, res: Response) => { 
     try {
         const crypto = req.query.crypto;
         
@@ -33,26 +31,37 @@ export const saveCryptoData = async (req: Request, res: Response) => {
             return res.status(400).json({ message: 'Crypto query parameter is required' });
         }
 
-        const cryptoData = await axiosFactory("get", `https://api.coingecko.com/api/v3/coins/${crypto}`);
+        const cryptoData = await axiosFactory("get", `${process.env.COINGECKO_API}/coins/${crypto}`);
 
-        // Extract only the fields defined in your ICrypto interface
         const filteredCryptoData = filterCryptoData(cryptoData);
 
-        // Check if cryptocurrency with the same ID already exists
         let existingCrypto = await Crypto.findOne({ id: filteredCryptoData.id });
 
         if (existingCrypto) {
-            // If exists, update the market_data array to keep the latest 20 entries
-            existingCrypto.market_data.push(filteredCryptoData.market_data[0]);
-            if (existingCrypto.market_data.length > 20) {
-                existingCrypto.market_data = existingCrypto.market_data.slice(-20);
+            const existingEntry = existingCrypto.market_data.find((entry: any) => entry.last_updated === filteredCryptoData.last_updated);
+
+            if(!existingEntry)
+            {
+                existingCrypto.market_data.unshift(filteredCryptoData.market_data[0]);
+                if (existingCrypto.market_data.length > 20) {
+                    existingCrypto.market_data = existingCrypto.market_data.slice(0, 20);
+                }
+                existingCrypto.last_updated = filteredCryptoData.last_updated;
+                await existingCrypto.save();
+            }else{
+            console.log("call cancel because sane timestamp");
+
             }
-            existingCrypto.last_updated = filteredCryptoData.last_updated;
-            await existingCrypto.save();
+            
         } else {
-            // If not exists, create a new record
-            await Crypto.create(filteredCryptoData);
+            let document=await Crypto.create(filteredCryptoData);
+            console.log("document");
+            
+            return res.status(200).json({ message: 'Cryptocurrency data saved successfully', data:document });
+         
         }
+        console.log("existingCrypto");
+
 
         res.status(200).json({ message: 'Cryptocurrency data saved successfully', data:existingCrypto });
     } catch (error) {
@@ -64,15 +73,36 @@ export const saveCryptoData = async (req: Request, res: Response) => {
 export const getCryptoList=async(req:Request, res: Response)=>{
     
     try {
-        const cryptoList = await axiosFactory("get", `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd`);
-    console.log("hello",cryptoList);
+        const cryptoList = await axiosFactory("get", `${process.env.COINGECKO_API}/coins/markets?vs_currency=usd`);
 
         res.status(200).json({ message: 'Cryptocurrency List fetch', data:cryptoList });
         
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error saving cryptocurrency data:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: error?.message||'Internal server error' });
     }
 
 }
+
+export const getPriceHistory=async(req:Request, res: Response)=>{
+    
+    try {
+        const crypto = req.query.crypto;
+        
+        if (!crypto) {
+            return res.status(400).json({ message: 'Crypto query parameter is required' });
+        }
+        let priceHistory:any = await axiosFactory("get", `${process.env.COINGECKO_API}/coins/${crypto}/market_chart?vs_currency=usd&days=120`);
+        let ans:[]=priceHistory?.prices?.slice(110,120)
+        console.log(ans);
+        
+        res.status(200).json({ message: 'Cryptocurrency List fetch', data:ans });
+        
+    } catch (error) {
+        console.error('Error saving cryptocurrency data:', error);
+        res.status(500).json({ message:'Internal server error' });
+    }
+
+}
+
  
