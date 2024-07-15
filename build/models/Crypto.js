@@ -31,6 +31,6 @@ const cryptoSchema = new mongoose_1.Schema({
     name: { type: String },
     image: { type: Object },
     market_data: { type: [Object], default: [] },
-    last_updated: { type: Date, required: true }
+    last_updated: { type: Date }
 });
 exports.Crypto = mongoose_1.default.model('Crypto', cryptoSchema);

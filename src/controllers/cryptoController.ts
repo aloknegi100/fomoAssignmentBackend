@@ -38,9 +38,9 @@ export const saveCryptoData = async (req: Request, res: Response) => {
         let existingCrypto = await Crypto.findOne({ id: filteredCryptoData.id });
 
         if (existingCrypto) {
-            const existingEntry = existingCrypto.market_data.find((entry: any) => entry.last_updated === filteredCryptoData.last_updated);
+            // const existingEntry = existingCrypto.market_data.find((entry: any) => entry.last_updated === filteredCryptoData.last_updated);
 
-            if(!existingEntry)
+            if(1)
             {
                 existingCrypto.market_data.unshift(filteredCryptoData.market_data[0]);
                 if (existingCrypto.market_data.length > 20) {

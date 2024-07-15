@@ -33,8 +33,8 @@ const saveCryptoData = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const filteredCryptoData = filterCryptoData(cryptoData);
         let existingCrypto = yield Crypto_1.Crypto.findOne({ id: filteredCryptoData.id });
         if (existingCrypto) {
-            const existingEntry = existingCrypto.market_data.find((entry) => entry.last_updated === filteredCryptoData.last_updated);
-            if (!existingEntry) {
+            // const existingEntry = existingCrypto.market_data.find((entry: any) => entry.last_updated === filteredCryptoData.last_updated);
+            if (1) {
                 existingCrypto.market_data.unshift(filteredCryptoData.market_data[0]);
                 if (existingCrypto.market_data.length > 20) {
                     existingCrypto.market_data = existingCrypto.market_data.slice(0, 20);

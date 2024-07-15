@@ -7,7 +7,7 @@ const cryptoSchema: Schema = new Schema({
   name: { type: String },
   image: { type: Object },
   market_data: { type: [Object], default: [] },
-  last_updated: { type: Date, required: true }
+  last_updated: { type: Date}
 });
 
 export const Crypto = mongoose.model<ICrypto>('Crypto', cryptoSchema);
