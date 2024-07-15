@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.saveCryptoData = void 0;
+exports.getCryptoList = exports.saveCryptoData = void 0;
 const Crypto_1 = require("../models/Crypto");
 const axiosFactory_1 = require("../services/axiosFactory");
 // Helper function to filter and map cryptoData
@@ -57,3 +57,15 @@ const saveCryptoData = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.saveCryptoData = saveCryptoData;
+const getCryptoList = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const cryptoList = yield (0, axiosFactory_1.axiosFactory)("get", `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd`);
+        console.log("hello", cryptoList);
+        res.status(200).json({ message: 'Cryptocurrency List fetch', data: cryptoList });
+    }
+    catch (error) {
+        console.error('Error saving cryptocurrency data:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+exports.getCryptoList = getCryptoList;

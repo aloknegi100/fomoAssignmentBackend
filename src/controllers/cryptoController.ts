@@ -19,7 +19,7 @@ const filterCryptoData = (cryptoData: any): ICrypto => {
         symbol,
         name,
         image,
-        market_data: [market_data],
+        market_data: [market_data], 
         last_updated
     };
 };
@@ -60,3 +60,19 @@ export const saveCryptoData = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+export const getCryptoList=async(req:Request, res: Response)=>{
+    
+    try {
+        const cryptoList = await axiosFactory("get", `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd`);
+    console.log("hello",cryptoList);
+
+        res.status(200).json({ message: 'Cryptocurrency List fetch', data:cryptoList });
+        
+    } catch (error) {
+        console.error('Error saving cryptocurrency data:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+
+}
+ 
